@@ -1,4 +1,9 @@
 (() => {
+  console.log(
+    "%c[Jira Upgrade Tools]%c extensão carregada — collapsible columns",
+    "background:#0052CC;color:white;font-weight:bold;padding:2px 6px;border-radius:3px",
+    "color:#172B4D;font-weight:bold"
+  );
   const STORAGE_KEY = "jira-upgrade-tools:collapsed-columns";
   const BUTTON_CLASS = "jut-collapse-column";
   const COLLAPSED_CLASS = "jut-column-collapsed";
