@@ -81,10 +81,22 @@
         writeState(collapsed);
       };
 
-      button.addEventListener("click", (e) => {
+      const toggle = (e) => {
         e.preventDefault();
         e.stopPropagation();
         setCollapsed(!column.classList.contains(COLLAPSED_CLASS));
+      };
+
+      button.addEventListener("click", toggle);
+
+      // O próprio título da coluna também funciona como controle de colapso.
+      heading.classList.add("jut-column-title-toggle");
+      heading.title = `Colapsar/expandir ${title}`;
+      heading.setAttribute("role", "button");
+      heading.setAttribute("tabindex", "0");
+      heading.addEventListener("click", toggle);
+      heading.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") toggle(e);
       });
 
       setCollapsed(collapsed.has(title));
