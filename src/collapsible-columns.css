@@ -92,7 +92,7 @@
   display:block !important;
   visibility:visible !important;
   position:absolute !important;
-  top:42px !important;
+  top:50px !important;
   left:50% !important;
   transform:translateX(-50%) rotate(90deg) !important;
   transform-origin:center top !important;
