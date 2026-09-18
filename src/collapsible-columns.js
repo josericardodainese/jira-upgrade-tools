@@ -1,66 +1,81 @@
 (() => {
-  console.log("%c[Jira Upgrade Tools]%c extensão carregada — collapsible columns",
-    "background:#0052CC;color:white;font-weight:bold;padding:2px 6px;border-radius:3px",
-    "color:#172B4D;font-weight:bold");
+  console.log("[Jira Upgrade Tools] extensão carregada — collapsible columns");
 
   const STORAGE_KEY = "jira-upgrade-tools:collapsed-columns";
   const COLUMN = '[data-testid="platform-board-kit.ui.column.draggable-column.styled-wrapper"]';
   const HEADER = '[data-testid="platform-board-kit.common.ui.column-header.header.column-header-container"]';
-  const BOARD_COLUMN = '.__board-test-hook__column';
   const TITLE = '[data-testid="platform-board-kit.common.ui.column-header.editable-title.column-title.column-name"]';
-  const collapsed = (() => { try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")); } catch { return new Set(); } })();
+
+  const collapsed = (() => {
+    try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); }
+    catch { return new Set(); }
+  })();
   const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
+
+  function setCollapsed(column, title, value) {
+    column.classList.toggle("jut-column-collapsed", value);
+    const rail = column.querySelector(":scope > .jut-collapsed-rail");
+    if (rail) {
+      rail.textContent = "›";
+      rail.title = `Expandir ${title}`;
+      rail.setAttribute("aria-label", rail.title);
+    }
+    if (value) collapsed.add(title); else collapsed.delete(title);
+    save();
+  }
 
   function install() {
     const columns = [...document.querySelectorAll(COLUMN)];
-    if (columns.length) console.debug("[Jira Upgrade Tools] colunas encontradas:", columns.length);
+    console.debug("[Jira Upgrade Tools] colunas encontradas:", columns.length);
 
     columns.forEach((column) => {
       if (column.dataset.jutCollapsible === "true") return;
+
       const titleEl = column.querySelector(TITLE);
       const header = column.querySelector(HEADER);
-      const boardColumn = column.querySelector(BOARD_COLUMN);
-      if (!titleEl || !header || !boardColumn) return;
+      if (!titleEl || !header) return;
 
       const title = (titleEl.getAttribute("title") || titleEl.textContent || "").trim();
       if (!title) return;
 
       column.dataset.jutCollapsible = "true";
       column.dataset.jutColumnTitle = title;
-      header.classList.add("jut-column-header");
-      titleEl.classList.add("jut-column-title-toggle");
-      titleEl.setAttribute("role", "button");
-      titleEl.setAttribute("tabindex", "0");
 
       const button = document.createElement("button");
       button.type = "button";
       button.className = "jut-collapse-column";
+      button.textContent = "‹";
+      button.title = `Colapsar ${title}`;
+      button.setAttribute("aria-label", button.title);
       header.appendChild(button);
 
-      const setCollapsed = (value) => {
-        column.classList.toggle("jut-column-collapsed", value);
-        boardColumn.classList.toggle("jut-board-column-collapsed", value);
-        button.textContent = value ? "›" : "‹";
-        button.title = value ? `Expandir ${title}` : `Colapsar ${title}`;
-        button.setAttribute("aria-label", button.title);
-        titleEl.title = button.title;
-        if (value) collapsed.add(title); else collapsed.delete(title);
-        save();
+      const rail = document.createElement("button");
+      rail.type = "button";
+      rail.className = "jut-collapsed-rail";
+      rail.textContent = "›";
+      rail.title = `Expandir ${title}`;
+      rail.setAttribute("aria-label", rail.title);
+      column.prepend(rail);
+
+      const collapse = (e) => {
+        e.preventDefault(); e.stopPropagation();
+        setCollapsed(column, title, true);
+      };
+      const expand = (e) => {
+        e.preventDefault(); e.stopPropagation();
+        setCollapsed(column, title, false);
       };
 
-      const toggle = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setCollapsed(!column.classList.contains("jut-column-collapsed"));
-      };
+      button.addEventListener("click", collapse);
+      rail.addEventListener("click", expand);
 
-      button.addEventListener("click", toggle);
-      titleEl.addEventListener("click", toggle);
-      titleEl.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" || e.key === " ") toggle(e);
+      titleEl.classList.add("jut-column-title-toggle");
+      titleEl.addEventListener("click", (e) => {
+        e.preventDefault(); e.stopPropagation();
+        setCollapsed(column, title, !column.classList.contains("jut-column-collapsed"));
       });
 
-      setCollapsed(collapsed.has(title));
+      setCollapsed(column, title, collapsed.has(title));
     });
   }
 
