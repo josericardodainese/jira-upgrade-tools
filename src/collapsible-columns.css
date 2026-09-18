@@ -97,6 +97,7 @@
   transform:translateX(-50%) rotate(90deg) !important;
   transform-origin:center top !important;
   white-space:nowrap !important;
+  text-transform:uppercase !important;
   font:600 11px/16px system-ui,sans-serif !important;
   color:#44546f !important;
   letter-spacing:.2px !important;
