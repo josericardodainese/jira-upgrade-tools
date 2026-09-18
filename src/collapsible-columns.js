@@ -71,7 +71,8 @@
       const expandButton = document.createElement("button");
       expandButton.type = "button";
       expandButton.className = "jut-expand-column";
-      expandButton.textContent = "›";
+      expandButton.innerHTML = '<span class="jut-expand-arrow">›</span><span class="jut-collapsed-title"></span>';
+      expandButton.querySelector(".jut-collapsed-title").textContent = title;
       expandButton.title = `Expandir ${title}`;
       expandButton.setAttribute("aria-label", expandButton.title);
       column.appendChild(expandButton);
