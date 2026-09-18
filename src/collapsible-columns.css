@@ -1,0 +1,30 @@
+.jut-collapse-column {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 20px;
+  line-height: 24px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  margin-left: auto;
+  flex: 0 0 auto;
+}
+.jut-collapse-column:hover { background: rgba(9, 30, 66, 0.08); }
+.jut-column-collapsed {
+  min-width: 44px !important;
+  width: 44px !important;
+  max-width: 44px !important;
+  overflow: hidden !important;
+  flex: 0 0 44px !important;
+}
+.jut-column-collapsed > * { visibility: hidden; }
+.jut-column-collapsed .jut-collapse-column {
+  visibility: visible !important;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+.jut-column-collapsed { position: relative !important; }
