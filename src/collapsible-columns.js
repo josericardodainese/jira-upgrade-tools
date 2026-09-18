@@ -40,6 +40,9 @@
 
       column.dataset.jutCollapsible = "true";
       column.dataset.jutColumnTitle = title;
+      // Guarda a largura original para restaurar exatamente ao expandir.
+      const initialRect = column.getBoundingClientRect();
+      if (initialRect.width > 50) column.style.setProperty("--jut-original-width", initialRect.width + "px");
 
       const button = document.createElement("button");
       button.type = "button";
