@@ -12,14 +12,8 @@
   })();
   const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
 
-  function setCollapsed(column, title, value) {
+  function apply(column, title, value) {
     column.classList.toggle("jut-column-collapsed", value);
-    const rail = column.querySelector(":scope > .jut-collapsed-rail");
-    if (rail) {
-      rail.textContent = "›";
-      rail.title = `Expandir ${title}`;
-      rail.setAttribute("aria-label", rail.title);
-    }
     if (value) collapsed.add(title); else collapsed.delete(title);
     save();
   }
@@ -30,7 +24,6 @@
 
     columns.forEach((column) => {
       if (column.dataset.jutCollapsible === "true") return;
-
       const titleEl = column.querySelector(TITLE);
       const header = column.querySelector(HEADER);
       if (!titleEl || !header) return;
@@ -39,46 +32,41 @@
       if (!title) return;
 
       column.dataset.jutCollapsible = "true";
-      column.dataset.jutColumnTitle = title;
-      // Guarda a largura original para restaurar exatamente ao expandir.
-      const initialRect = column.getBoundingClientRect();
-      if (initialRect.width > 50) column.style.setProperty("--jut-original-width", initialRect.width + "px");
 
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "jut-collapse-column";
-      button.textContent = "‹";
-      button.title = `Colapsar ${title}`;
-      button.setAttribute("aria-label", button.title);
-      header.appendChild(button);
+      const collapseButton = document.createElement("button");
+      collapseButton.type = "button";
+      collapseButton.className = "jut-collapse-column";
+      collapseButton.textContent = "‹";
+      collapseButton.title = `Colapsar ${title}`;
+      collapseButton.setAttribute("aria-label", collapseButton.title);
 
-      const rail = document.createElement("button");
-      rail.type = "button";
-      rail.className = "jut-collapsed-rail";
-      rail.textContent = "›";
-      rail.title = `Expandir ${title}`;
-      rail.setAttribute("aria-label", rail.title);
-      column.prepend(rail);
+      // Coloca o botão no canto DIREITO do header.
+      header.appendChild(collapseButton);
 
-      const collapse = (e) => {
+      // Botão independente usado somente quando a coluna está colapsada.
+      const expandButton = document.createElement("button");
+      expandButton.type = "button";
+      expandButton.className = "jut-expand-column";
+      expandButton.textContent = "›";
+      expandButton.title = `Expandir ${title}`;
+      expandButton.setAttribute("aria-label", expandButton.title);
+      column.appendChild(expandButton);
+
+      collapseButton.addEventListener("click", (e) => {
         e.preventDefault(); e.stopPropagation();
-        setCollapsed(column, title, true);
-      };
-      const expand = (e) => {
+        apply(column, title, true);
+      });
+      expandButton.addEventListener("click", (e) => {
         e.preventDefault(); e.stopPropagation();
-        setCollapsed(column, title, false);
-      };
-
-      button.addEventListener("click", collapse);
-      rail.addEventListener("click", expand);
-
+        apply(column, title, false);
+      });
       titleEl.classList.add("jut-column-title-toggle");
       titleEl.addEventListener("click", (e) => {
         e.preventDefault(); e.stopPropagation();
-        setCollapsed(column, title, !column.classList.contains("jut-column-collapsed"));
+        apply(column, title, !column.classList.contains("jut-column-collapsed"));
       });
 
-      setCollapsed(column, title, collapsed.has(title));
+      apply(column, title, collapsed.has(title));
     });
   }
 
@@ -86,7 +74,7 @@
   new MutationObserver(() => {
     clearTimeout(timer);
     timer = setTimeout(install, 100);
-  }).observe(document.documentElement, {childList:true, subtree:true});
+  }).observe(document.documentElement, {childList:true,subtree:true});
 
   install();
 })();
