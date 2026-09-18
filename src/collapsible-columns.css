@@ -99,11 +99,22 @@
   z-index:102 !important;
 }
 
-/* Título da coluna colapsada: centralizado SOMENTE na largura da faixa.
-   Verticalmente começa próximo ao topo, para continuar legível. */
+
+/* Título colapsado: centralizado na largura da faixa e ancorado no topo. */
 .jut-expand-column .jut-collapsed-title {
-  top:18px !important;
+  display:block !important;
+  visibility:visible !important;
+  position:absolute !important;
+  top:14px !important;
   left:50% !important;
-  transform:translateX(-50%) rotate(90deg) !important;
-  transform-origin:left center !important;
+  transform:translateX(-50%) !important;
+  writing-mode:vertical-rl !important;
+  text-orientation:mixed !important;
+  white-space:nowrap !important;
+  text-transform:uppercase !important;
+  font:600 11px/16px system-ui,sans-serif !important;
+  color:#44546f !important;
+  letter-spacing:.2px !important;
+  pointer-events:none !important;
+  z-index:102 !important;
 }
