@@ -1,30 +1,47 @@
+.jut-column-header {
+  position: relative !important;
+}
 .jut-collapse-column {
   appearance: none;
   border: 0;
   background: transparent;
-  color: inherit;
+  color: #44546f;
   cursor: pointer;
-  font-size: 20px;
-  line-height: 24px;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  margin-left: auto;
-  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0;
+  margin-left: 4px;
+  border-radius: 4px;
+  font: 600 18px/20px system-ui, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  flex: 0 0 22px;
 }
-.jut-collapse-column:hover { background: rgba(9, 30, 66, 0.08); }
+.jut-collapse-column:hover { background: #091e420f; color: #172b4d; }
 .jut-column-collapsed {
-  min-width: 44px !important;
-  width: 44px !important;
-  max-width: 44px !important;
+  min-width: 42px !important;
+  width: 42px !important;
+  max-width: 42px !important;
+  flex: 0 0 42px !important;
   overflow: hidden !important;
-  flex: 0 0 44px !important;
+  position: relative !important;
 }
-.jut-column-collapsed > * { visibility: hidden; }
+.jut-column-collapsed > * { visibility: hidden !important; }
+.jut-column-collapsed .jut-column-header,
 .jut-column-collapsed .jut-collapse-column {
   visibility: visible !important;
-  position: absolute;
-  top: 8px;
-  left: 8px;
 }
-.jut-column-collapsed { position: relative !important; }
+.jut-column-collapsed .jut-column-header > *:not(.jut-collapse-column) {
+  visibility: hidden !important;
+}
+.jut-column-collapsed .jut-column-header {
+  position: absolute !important;
+  inset: 8px 0 auto 0;
+  display: flex !important;
+  justify-content: center !important;
+  width: 42px !important;
+}
+.jut-column-collapsed .jut-collapse-column { margin: 0; }
