@@ -5,6 +5,7 @@
   const COLUMN = '[data-testid="platform-board-kit.ui.column.draggable-column.styled-wrapper"]';
   const HEADER = '[data-testid="platform-board-kit.common.ui.column-header.header.column-header-container"]';
   const TITLE = '[data-testid="platform-board-kit.common.ui.column-header.editable-title.column-title.column-name"]';
+  const BOARD_ROW = '._m6k41e03._1e0c1ule._kqswh2mm._1bsb1osq';
 
   const collapsed = (() => {
     try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); }
@@ -12,8 +13,16 @@
   })();
   const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
 
+  function syncParentTrack(column, value) {
+    // O Jira reserva a largura no item pai da coluna. Reduzimos esse item também.
+    const parentItem = column.parentElement;
+    if (!parentItem) return;
+    parentItem.classList.toggle("jut-column-parent-collapsed", value);
+  }
+
   function apply(column, title, value) {
     column.classList.toggle("jut-column-collapsed", value);
+    syncParentTrack(column, value);
     if (value) collapsed.add(title); else collapsed.delete(title);
     save();
   }
