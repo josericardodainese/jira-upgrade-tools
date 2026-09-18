@@ -86,6 +86,8 @@
   position:absolute !important;
   top:50% !important;
   left:50% !important;
+  /* O texto rotacionado deve ficar centrado no eixo horizontal da faixa,
+     mas não no meio da altura inteira da swimlane. */
   transform:translate(-50%, -50%) rotate(90deg) !important;
   transform-origin:center center !important;
   white-space:nowrap !important;
@@ -95,4 +97,13 @@
   letter-spacing:.2px !important;
   pointer-events:none !important;
   z-index:102 !important;
+}
+
+/* Título da coluna colapsada: centralizado SOMENTE na largura da faixa.
+   Verticalmente começa próximo ao topo, para continuar legível. */
+.jut-expand-column .jut-collapsed-title {
+  top:18px !important;
+  left:50% !important;
+  transform:translateX(-50%) rotate(90deg) !important;
+  transform-origin:left center !important;
 }
