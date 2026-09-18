@@ -45,3 +45,11 @@
   width: 42px !important;
 }
 .jut-column-collapsed .jut-collapse-column { margin: 0; }
+
+.jut-column-title-toggle {
+  cursor: pointer !important;
+  user-select: none;
+}
+.jut-column-title-toggle:hover {
+  text-decoration: underline;
+}
