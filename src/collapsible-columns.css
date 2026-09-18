@@ -1,23 +1,53 @@
 .jut-column-header { position: relative !important; }
-.jut-column-title-toggle { cursor: pointer !important; user-select: none; }
-.jut-column-title-toggle:hover { text-decoration: underline; }
+.jut-column-title-toggle { cursor:pointer !important; user-select:none; }
+.jut-column-title-toggle:hover { text-decoration:underline; }
 
 .jut-collapse-column {
   appearance:none; border:0; background:transparent; color:#44546f; cursor:pointer;
-  width:22px; height:22px; min-width:22px; padding:0; margin-left:4px; border-radius:4px;
-  font:600 18px/20px system-ui,sans-serif; display:inline-flex; align-items:center;
-  justify-content:center; flex:0 0 22px;
+  width:18px; height:18px; min-width:18px; padding:0; margin:0 2px;
+  border-radius:3px; font:600 14px/16px system-ui,sans-serif;
+  display:inline-flex; align-items:center; justify-content:center; flex:0 0 18px;
 }
 .jut-collapse-column:hover { background:#091e420f; color:#172b4d; }
 
+/* O wrapper draggable é o item que ocupa espaço no layout horizontal. */
 [data-testid="platform-board-kit.ui.column.draggable-column.styled-wrapper"].jut-column-collapsed {
-  min-width:42px !important; width:42px !important; max-width:42px !important;
-  flex:0 0 42px !important; overflow:hidden !important; position:relative !important;
+  width:42px !important; min-width:42px !important; max-width:42px !important;
+  flex:0 0 42px !important;
 }
-.jut-column-collapsed > div { visibility:hidden !important; }
-.jut-column-collapsed .jut-column-header,
-.jut-column-collapsed .jut-collapse-column { visibility:visible !important; }
-.jut-column-collapsed .jut-column-header > * { visibility:hidden !important; }
-.jut-column-collapsed .jut-column-header .jut-collapse-column {
-  visibility:visible !important; position:absolute; top:8px; left:10px; margin:0;
+
+/* E o filho do board também precisa perder a largura original do Jira. */
+.jut-board-column-collapsed {
+  width:42px !important; min-width:42px !important; max-width:42px !important;
+  overflow:hidden !important;
+}
+
+/* Colapsado: esconde conteúdo e deixa apenas um controle limpo no topo. */
+.jut-column-collapsed .jut-board-column-collapsed > * { display:none !important; }
+.jut-column-collapsed .jut-board-column-collapsed {
+  position:relative !important;
+  min-height:100% !important;
+}
+.jut-column-collapsed .jut-board-column-collapsed::before {
+  content:"›";
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:28px;
+  margin:6px auto;
+  border-radius:4px;
+  color:#44546f;
+  font:600 18px/28px system-ui,sans-serif;
+  cursor:pointer;
+}
+
+/* O botão real fica sobre o pseudo-botão, invisível mas clicável. */
+.jut-column-collapsed > div { position:relative !important; }
+.jut-column-collapsed .jut-collapse-column {
+  position:absolute !important;
+  top:6px; left:7px;
+  width:28px; height:28px;
+  opacity:0;
+  z-index:20;
 }
