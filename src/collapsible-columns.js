@@ -3,79 +3,100 @@
   const BUTTON_CLASS = "jut-collapse-column";
   const COLLAPSED_CLASS = "jut-column-collapsed";
 
+  const normalize = (v) => (v || "").replace(/\s+/g, " ").trim();
   const readState = () => {
     try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); }
     catch { return new Set(); }
   };
+  const writeState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify([...s]));
 
-  const writeState = (state) =>
-    localStorage.setItem(STORAGE_KEY, JSON.stringify([...state]));
+  function candidateHeaders() {
+    const selectors = [
+      "[data-testid*='column'] [role='heading']",
+      "[data-testid*='column'] h1,[data-testid*='column'] h2,[data-testid*='column'] h3,[data-testid*='column'] h4",
+      "[role='group'] [role='heading']",
+      "h1,h2,h3,h4,h5,h6,[role='heading']"
+    ];
+    return [...new Set(document.querySelectorAll(selectors.join(",")))];
+  }
 
-  const normalize = (value) => (value || "").replace(/\s+/g, " ").trim();
-
-  function findColumns() {
-    const headings = [...document.querySelectorAll("h1,h2,h3,h4,h5,h6,[role='heading']")];
-    return headings.map((heading) => {
-      const title = normalize(heading.textContent);
-      if (!title) return null;
-
-      let node = heading;
-      for (let i = 0; i < 7 && node?.parentElement; i++, node = node.parentElement) {
-        const el = node.parentElement;
-        const rect = el.getBoundingClientRect();
-        if (rect.width >= 120 && rect.width <= 500 && rect.height > 180) {
-          const style = getComputedStyle(el);
-          if (style.display === "flex" || style.display === "block") {
-            return { column: el, heading, title };
-          }
-        }
+  function findColumn(heading) {
+    let el = heading;
+    for (let i = 0; i < 10 && el; i++, el = el.parentElement) {
+      const r = el.getBoundingClientRect();
+      if (r.width >= 120 && r.width <= 420 && r.height >= 250) {
+        const parent = el.parentElement;
+        if (!parent) continue;
+        const siblings = [...parent.children].filter((x) => {
+          const sr = x.getBoundingClientRect();
+          return sr.width >= 120 && sr.width <= 420 && sr.height >= 250;
+        });
+        if (siblings.length >= 2) return el;
       }
-      return null;
-    }).filter(Boolean);
+    }
+    return null;
+  }
+
+  function headerHost(heading, column) {
+    let el = heading.parentElement;
+    while (el && el !== column) {
+      const r = el.getBoundingClientRect();
+      if (r.height >= 28 && r.height <= 90 && r.width > 100) return el;
+      el = el.parentElement;
+    }
+    return heading.parentElement || heading;
   }
 
   function install() {
     const collapsed = readState();
+    const seen = new Set();
 
-    for (const { column, heading, title } of findColumns()) {
-      if (column.dataset.jutCollapsible === "true") continue;
+    for (const heading of candidateHeaders()) {
+      const column = findColumn(heading);
+      if (!column || seen.has(column) || column.dataset.jutCollapsible === "true") continue;
+
+      const title = normalize(heading.textContent);
+      if (!title || title.length > 80) continue;
+
+      seen.add(column);
       column.dataset.jutCollapsible = "true";
       column.dataset.jutColumnTitle = title;
+
+      const host = headerHost(heading, column);
+      host.classList.add("jut-column-header");
 
       const button = document.createElement("button");
       button.type = "button";
       button.className = BUTTON_CLASS;
-      button.setAttribute("aria-label", `Colapsar coluna ${title}`);
-      button.title = "Colapsar/expandir coluna";
-      button.textContent = "‹";
-
-      heading.parentElement?.appendChild(button);
+      button.title = "Colapsar coluna";
+      button.innerHTML = "<span aria-hidden='true'>‹</span>";
+      host.appendChild(button);
 
       const setCollapsed = (value) => {
         column.classList.toggle(COLLAPSED_CLASS, value);
-        button.textContent = value ? "›" : "‹";
-        button.setAttribute("aria-expanded", String(!value));
-        button.setAttribute("aria-label", `${value ? "Expandir" : "Colapsar"} coluna ${title}`);
+        button.innerHTML = value ? "<span aria-hidden='true'>›</span>" : "<span aria-hidden='true'>‹</span>";
+        button.title = value ? `Expandir ${title}` : `Colapsar ${title}`;
+        button.setAttribute("aria-label", button.title);
         if (value) collapsed.add(title); else collapsed.delete(title);
         writeState(collapsed);
       };
 
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
         setCollapsed(!column.classList.contains(COLLAPSED_CLASS));
       });
 
-      if (collapsed.has(title)) setCollapsed(true);
+      setCollapsed(collapsed.has(title));
     }
   }
 
   let timer;
-  const observer = new MutationObserver(() => {
+  new MutationObserver(() => {
     clearTimeout(timer);
-    timer = setTimeout(install, 150);
-  });
+    timer = setTimeout(install, 100);
+  }).observe(document.documentElement, { childList: true, subtree: true });
 
-  observer.observe(document.documentElement, { childList: true, subtree: true });
+  window.addEventListener("resize", install);
   install();
 })();
