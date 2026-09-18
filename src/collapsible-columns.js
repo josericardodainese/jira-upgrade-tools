@@ -6,6 +6,7 @@
   const STORAGE_KEY = "jira-upgrade-tools:collapsed-columns";
   const COLUMN = '[data-testid="platform-board-kit.ui.column.draggable-column.styled-wrapper"]';
   const HEADER = '[data-testid="platform-board-kit.common.ui.column-header.header.column-header-container"]';
+  const BOARD_COLUMN = '.__board-test-hook__column';
   const TITLE = '[data-testid="platform-board-kit.common.ui.column-header.editable-title.column-title.column-name"]';
   const collapsed = (() => { try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")); } catch { return new Set(); } })();
   const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
@@ -18,7 +19,8 @@
       if (column.dataset.jutCollapsible === "true") return;
       const titleEl = column.querySelector(TITLE);
       const header = column.querySelector(HEADER);
-      if (!titleEl || !header) return;
+      const boardColumn = column.querySelector(BOARD_COLUMN);
+      if (!titleEl || !header || !boardColumn) return;
 
       const title = (titleEl.getAttribute("title") || titleEl.textContent || "").trim();
       if (!title) return;
@@ -37,6 +39,7 @@
 
       const setCollapsed = (value) => {
         column.classList.toggle("jut-column-collapsed", value);
+        boardColumn.classList.toggle("jut-board-column-collapsed", value);
         button.textContent = value ? "›" : "‹";
         button.title = value ? `Expandir ${title}` : `Colapsar ${title}`;
         button.setAttribute("aria-label", button.title);
