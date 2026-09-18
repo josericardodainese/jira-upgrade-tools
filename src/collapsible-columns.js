@@ -1,119 +1,71 @@
 (() => {
-  console.log(
-    "%c[Jira Upgrade Tools]%c extensão carregada — collapsible columns",
+  console.log("%c[Jira Upgrade Tools]%c extensão carregada — collapsible columns",
     "background:#0052CC;color:white;font-weight:bold;padding:2px 6px;border-radius:3px",
-    "color:#172B4D;font-weight:bold"
-  );
+    "color:#172B4D;font-weight:bold");
+
   const STORAGE_KEY = "jira-upgrade-tools:collapsed-columns";
-  const BUTTON_CLASS = "jut-collapse-column";
-  const COLLAPSED_CLASS = "jut-column-collapsed";
-
-  const normalize = (v) => (v || "").replace(/\s+/g, " ").trim();
-  const readState = () => {
-    try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")); }
-    catch { return new Set(); }
-  };
-  const writeState = (s) => localStorage.setItem(STORAGE_KEY, JSON.stringify([...s]));
-
-  function candidateHeaders() {
-    const selectors = [
-      "[data-testid*='column'] [role='heading']",
-      "[data-testid*='column'] h1,[data-testid*='column'] h2,[data-testid*='column'] h3,[data-testid*='column'] h4",
-      "[role='group'] [role='heading']",
-      "h1,h2,h3,h4,h5,h6,[role='heading']"
-    ];
-    return [...new Set(document.querySelectorAll(selectors.join(",")))];
-  }
-
-  function findColumn(heading) {
-    let el = heading;
-    for (let i = 0; i < 10 && el; i++, el = el.parentElement) {
-      const r = el.getBoundingClientRect();
-      if (r.width >= 120 && r.width <= 420 && r.height >= 250) {
-        const parent = el.parentElement;
-        if (!parent) continue;
-        const siblings = [...parent.children].filter((x) => {
-          const sr = x.getBoundingClientRect();
-          return sr.width >= 120 && sr.width <= 420 && sr.height >= 250;
-        });
-        if (siblings.length >= 2) return el;
-      }
-    }
-    return null;
-  }
-
-  function headerHost(heading, column) {
-    let el = heading.parentElement;
-    while (el && el !== column) {
-      const r = el.getBoundingClientRect();
-      if (r.height >= 28 && r.height <= 90 && r.width > 100) return el;
-      el = el.parentElement;
-    }
-    return heading.parentElement || heading;
-  }
+  const COLUMN = '[data-testid="platform-board-kit.ui.column.draggable-column.styled-wrapper"]';
+  const HEADER = '[data-testid="platform-board-kit.common.ui.column-header.header.column-header-container"]';
+  const TITLE = '[data-testid="platform-board-kit.common.ui.column-header.editable-title.column-title.column-name"]';
+  const collapsed = (() => { try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]")); } catch { return new Set(); } })();
+  const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
 
   function install() {
-    const collapsed = readState();
-    const seen = new Set();
+    const columns = [...document.querySelectorAll(COLUMN)];
+    if (columns.length) console.debug("[Jira Upgrade Tools] colunas encontradas:", columns.length);
 
-    for (const heading of candidateHeaders()) {
-      const column = findColumn(heading);
-      if (!column || seen.has(column) || column.dataset.jutCollapsible === "true") continue;
+    columns.forEach((column) => {
+      if (column.dataset.jutCollapsible === "true") return;
+      const titleEl = column.querySelector(TITLE);
+      const header = column.querySelector(HEADER);
+      if (!titleEl || !header) return;
 
-      const title = normalize(heading.textContent);
-      if (!title || title.length > 80) continue;
+      const title = (titleEl.getAttribute("title") || titleEl.textContent || "").trim();
+      if (!title) return;
 
-      seen.add(column);
       column.dataset.jutCollapsible = "true";
       column.dataset.jutColumnTitle = title;
-
-      const host = headerHost(heading, column);
-      host.classList.add("jut-column-header");
+      header.classList.add("jut-column-header");
+      titleEl.classList.add("jut-column-title-toggle");
+      titleEl.setAttribute("role", "button");
+      titleEl.setAttribute("tabindex", "0");
 
       const button = document.createElement("button");
       button.type = "button";
-      button.className = BUTTON_CLASS;
-      button.title = "Colapsar coluna";
-      button.innerHTML = "<span aria-hidden='true'>‹</span>";
-      host.appendChild(button);
+      button.className = "jut-collapse-column";
+      header.appendChild(button);
 
       const setCollapsed = (value) => {
-        column.classList.toggle(COLLAPSED_CLASS, value);
-        button.innerHTML = value ? "<span aria-hidden='true'>›</span>" : "<span aria-hidden='true'>‹</span>";
+        column.classList.toggle("jut-column-collapsed", value);
+        button.textContent = value ? "›" : "‹";
         button.title = value ? `Expandir ${title}` : `Colapsar ${title}`;
         button.setAttribute("aria-label", button.title);
+        titleEl.title = button.title;
         if (value) collapsed.add(title); else collapsed.delete(title);
-        writeState(collapsed);
+        save();
       };
 
       const toggle = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setCollapsed(!column.classList.contains(COLLAPSED_CLASS));
+        setCollapsed(!column.classList.contains("jut-column-collapsed"));
       };
 
       button.addEventListener("click", toggle);
-
-      // O próprio título da coluna também funciona como controle de colapso.
-      heading.classList.add("jut-column-title-toggle");
-      heading.title = `Colapsar/expandir ${title}`;
-      heading.setAttribute("role", "button");
-      heading.setAttribute("tabindex", "0");
-      heading.addEventListener("click", toggle);
-      heading.addEventListener("keydown", (e) => {
+      titleEl.addEventListener("click", toggle);
+      titleEl.addEventListener("keydown", (e) => {
         if (e.key === "Enter" || e.key === " ") toggle(e);
       });
 
       setCollapsed(collapsed.has(title));
-    }
+    });
   }
 
   let timer;
   new MutationObserver(() => {
     clearTimeout(timer);
     timer = setTimeout(install, 100);
-  }).observe(document.documentElement, { childList: true, subtree: true });
+  }).observe(document.documentElement, {childList:true, subtree:true});
 
-  window.addEventListener("resize", install);
   install();
 })();
