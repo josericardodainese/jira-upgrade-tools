@@ -13,16 +13,9 @@
   })();
   const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
 
-  function syncParentTrack(column, value) {
-    // O Jira reserva a largura no item pai da coluna. Reduzimos esse item também.
-    const parentItem = column.parentElement;
-    if (!parentItem) return;
-    parentItem.classList.toggle("jut-column-parent-collapsed", value);
-  }
-
   function apply(column, title, value) {
+    // Nunca toca no parentElement: ele é compartilhado por TODAS as colunas do board.
     column.classList.toggle("jut-column-collapsed", value);
-    syncParentTrack(column, value);
     if (value) collapsed.add(title); else collapsed.delete(title);
     save();
   }
