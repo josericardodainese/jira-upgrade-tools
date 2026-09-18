@@ -76,3 +76,30 @@
   z-index:100;
 }
 
+
+.jut-expand-column {
+  overflow:hidden !important;
+}
+.jut-expand-column .jut-expand-arrow {
+  position:absolute;
+  top:6px;
+  left:0;
+  width:32px;
+  text-align:center;
+  line-height:20px;
+}
+.jut-expand-column .jut-collapsed-title {
+  position:absolute;
+  top:34px;
+  left:50%;
+  transform:translateX(-50%);
+  writing-mode:vertical-rl;
+  text-orientation:mixed;
+  white-space:nowrap;
+  font:600 11px/16px system-ui,sans-serif;
+  color:#44546f;
+  letter-spacing:.2px;
+  max-height:calc(100% - 42px);
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
