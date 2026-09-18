@@ -76,17 +76,3 @@
   z-index:100;
 }
 
-/* O espaço marcado na imagem pertence ao item PAI do draggable-column. */
-.jut-column-parent-collapsed {
-  box-sizing:border-box !important;
-  inline-size:32px !important;
-  width:32px !important;
-  min-inline-size:32px !important;
-  min-width:32px !important;
-  max-inline-size:32px !important;
-  max-width:32px !important;
-  flex:0 0 32px !important;
-  padding:0 !important;
-  margin-inline:2px !important;
-  overflow:hidden !important;
-}
