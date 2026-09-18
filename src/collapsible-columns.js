@@ -96,28 +96,6 @@
     });
   }
 
-  // Durante drag & drop o Jira mede as tracks originais do grid.
-  // Suspende temporariamente nosso layout customizado para não quebrar o overlay/placeholder.
-  let dragDepth = 0;
-  document.addEventListener("dragstart", () => {
-    dragDepth++;
-    document.documentElement.classList.add("jut-dragging");
-    document.querySelectorAll(COLUMN).forEach((column) => {
-      const grid = column.parentElement;
-      if (grid) grid.style.removeProperty("grid-template-columns");
-    });
-  }, true);
-
-  document.addEventListener("dragend", () => {
-    dragDepth = Math.max(0, dragDepth - 1);
-    if (dragDepth === 0) {
-      document.documentElement.classList.remove("jut-dragging");
-      requestAnimationFrame(() => {
-        document.querySelectorAll(COLUMN).forEach((column) => syncGrid(column));
-      });
-    }
-  }, true);
-
   let timer;
   new MutationObserver(() => {
     clearTimeout(timer);
