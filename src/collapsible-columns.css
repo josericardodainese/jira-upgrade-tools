@@ -1,43 +1,77 @@
 .jut-column-title-toggle { cursor:pointer !important; user-select:none; }
 .jut-column-title-toggle:hover { text-decoration:underline; }
 
-.jut-collapse-column {
-  appearance:none; border:0; background:transparent; color:#44546f; cursor:pointer;
-  width:18px; height:18px; min-width:18px; padding:0; margin-left:3px; border-radius:3px;
-  font:600 14px/16px system-ui,sans-serif; display:inline-flex; align-items:center; justify-content:center;
+[data-testid="platform-board-kit.common.ui.column-header.header.column-header-container"] {
+  position:relative !important;
 }
-.jut-collapse-column:hover,.jut-collapsed-rail:hover { background:#091e420f; }
-.jut-collapsed-rail { display:none; }
+
+.jut-collapse-column {
+  appearance:none;
+  position:absolute !important;
+  right:6px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  z-index:50;
+  border:0;
+  background:transparent;
+  color:#44546f;
+  cursor:pointer;
+  width:20px;
+  height:20px;
+  padding:0;
+  border-radius:4px;
+  font:600 16px/18px system-ui,sans-serif;
+}
+.jut-collapse-column:hover,.jut-expand-column:hover { background:#091e420f; }
+
+.jut-expand-column { display:none; }
 
 /*
- * O Jira usa CSS Grid no container das colunas. Só reduzir width do filho não
- * libera a track do grid. display:contents remove o wrapper da equação e o rail
- * passa a ser o único item que ocupa espaço quando a coluna está colapsada.
+ * O próprio draggable-column é a track usada pelo board. Forçamos TODAS as
+ * dimensões relevantes; não usamos display:contents porque o pai do board
+ * mantém a largura calculada a partir deste item.
  */
 [data-testid="platform-board-kit.ui.column.draggable-column.styled-wrapper"].jut-column-collapsed {
-  display:contents !important;
+  position:relative !important;
+  box-sizing:border-box !important;
+  inline-size:32px !important;
+  width:32px !important;
+  min-inline-size:32px !important;
+  min-width:32px !important;
+  max-inline-size:32px !important;
+  max-width:32px !important;
+  flex:0 0 32px !important;
+  grid-column:auto !important;
+  padding:0 !important;
+  margin-inline:2px !important;
+  overflow:hidden !important;
 }
-.jut-column-collapsed > :not(.jut-collapsed-rail) {
+
+/* Zera também os wrappers internos que carregam min-width do Atlassian. */
+.jut-column-collapsed > :not(.jut-expand-column),
+.jut-column-collapsed > :not(.jut-expand-column) > * {
   display:none !important;
+  min-width:0 !important;
+  width:0 !important;
 }
-.jut-column-collapsed > .jut-collapsed-rail {
+
+.jut-column-collapsed > .jut-expand-column {
   appearance:none;
   display:flex !important;
+  position:absolute !important;
+  inset:0 !important;
   box-sizing:border-box !important;
-  width:28px !important;
-  min-width:28px !important;
-  max-width:28px !important;
+  width:32px !important;
   height:100% !important;
-  min-height:120px !important;
-  padding:8px 0 0 !important;
-  margin:0 2px !important;
   border:0 !important;
   border-radius:6px !important;
+  padding:8px 0 0 !important;
+  margin:0 !important;
   background:var(--project-color-elevation-surface-sunken,#f4f5f7);
   color:#44546f;
   cursor:pointer;
   align-items:flex-start;
   justify-content:center;
   font:600 16px/20px system-ui,sans-serif;
-  z-index:10;
+  z-index:100;
 }
