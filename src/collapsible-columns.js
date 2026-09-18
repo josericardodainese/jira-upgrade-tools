@@ -72,6 +72,7 @@
       expandButton.type = "button";
       expandButton.className = "jut-expand-column";
       expandButton.innerHTML = '<span class="jut-expand-arrow">›</span><span class="jut-collapsed-title"></span>';
+      // Use transform em vez de writing-mode: o texto fica inteiro, apenas rotacionado.
       expandButton.querySelector(".jut-collapsed-title").textContent = title;
       expandButton.title = `Expandir ${title}`;
       expandButton.setAttribute("aria-label", expandButton.title);
