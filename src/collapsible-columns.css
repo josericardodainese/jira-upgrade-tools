@@ -80,22 +80,14 @@
 .jut-expand-column {
   overflow:hidden !important;
 }
-.jut-expand-column .jut-expand-arrow {
-  position:absolute;
-  top:6px;
-  left:0;
-  width:32px;
-  text-align:center;
-  line-height:20px;
-}
 .jut-expand-column .jut-collapsed-title {
   display:block !important;
   visibility:visible !important;
   position:absolute !important;
-  top:50px !important;
+  top:50% !important;
   left:50% !important;
-  transform:translateX(-50%) rotate(90deg) !important;
-  transform-origin:center top !important;
+  transform:translate(-50%, -50%) rotate(90deg) !important;
+  transform-origin:center center !important;
   white-space:nowrap !important;
   text-transform:uppercase !important;
   font:600 11px/16px system-ui,sans-serif !important;
