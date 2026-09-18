@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Jira Upgrade Tools",
+  "version": "0.1.0",
+  "description": "Melhorias de usabilidade para boards do Jira.",
+  "content_scripts": [
+    {
+      "matches": ["https://*.atlassian.net/*"],
+      "js": ["src/collapsible-columns.js"],
+      "css": ["src/collapsible-columns.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
