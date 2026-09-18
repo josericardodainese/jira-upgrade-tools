@@ -13,9 +13,31 @@
   })();
   const save = () => localStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsed]));
 
+  function syncGrid(column) {
+    const grid = column.parentElement;
+    if (!grid) return;
+
+    const columns = [...grid.querySelectorAll(":scope > " + COLUMN)];
+    if (!columns.length) return;
+
+    // O Jira usa minmax(150px, 1fr), então width no filho não libera a track.
+    // Substituímos cada track: 32px para colapsada e minmax(150px, 1fr) para aberta.
+    grid.style.setProperty(
+      "grid-template-columns",
+      columns
+        .map((item) =>
+          item.classList.contains("jut-column-collapsed")
+            ? "32px"
+            : "minmax(150px, 1fr)"
+        )
+        .join(" "),
+      "important"
+    );
+  }
+
   function apply(column, title, value) {
-    // Nunca toca no parentElement: ele é compartilhado por TODAS as colunas do board.
     column.classList.toggle("jut-column-collapsed", value);
+    syncGrid(column);
     if (value) collapsed.add(title); else collapsed.delete(title);
     save();
   }
